@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "kellisp:lib"
+
+    - path: "./app/Main.hs"
+      component: "kellisp:exe:kellisp-exe"
+
+    - path: "./app/Paths_kellisp.hs"
+      component: "kellisp:exe:kellisp-exe"
+
+    - path: "./test"
+      component: "kellisp:test:kellisp-test"

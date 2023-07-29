@@ -1,0 +1,66 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           kellisp
+version:        0.1.0.0
+synopsis:       A simple Lisp implementation in Haskell
+description:    Please see the README on GitHub at <https://github.com/zackbach/kellisp#readme>
+category:       Compilers/Interpreters
+homepage:       https://github.com/zackbach/kellisp#readme
+bug-reports:    https://github.com/zackbach/kellisp/issues
+author:         Zack Eisbach
+maintainer:     zack.eisbach@gmail.com
+copyright:      2023 Zack Eisbach
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/zackbach/kellisp
+
+library
+  exposed-modules:
+      Kellisp
+  other-modules:
+      Paths_kellisp
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable kellisp-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_kellisp
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , kellisp
+  default-language: Haskell2010
+
+test-suite kellisp-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      KellispSpec
+      Paths_kellisp
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      hspec-discover:hspec-discover
+  build-depends:
+      base >=4.7 && <5
+    , hspec
+    , kellisp
+  default-language: Haskell2010
