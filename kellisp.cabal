@@ -34,6 +34,7 @@ library
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , haskeline
   default-language: Haskell2010
 
 executable kellisp-exe
@@ -45,6 +46,7 @@ executable kellisp-exe
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , haskeline
     , kellisp
   default-language: Haskell2010
 
@@ -61,6 +63,7 @@ test-suite kellisp-test
       hspec-discover:hspec-discover
   build-depends:
       base >=4.7 && <5
+    , haskeline
     , hspec
     , kellisp
   default-language: Haskell2010
