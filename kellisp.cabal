@@ -27,6 +27,8 @@ source-repository head
 library
   exposed-modules:
       Kellisp
+      Kellisp.Parser
+      Kellisp.Types
   other-modules:
       Paths_kellisp
   hs-source-dirs:
@@ -35,6 +37,8 @@ library
   build-depends:
       base >=4.7 && <5
     , haskeline
+    , megaparsec
+    , text
   default-language: Haskell2010
 
 executable kellisp-exe
@@ -48,6 +52,8 @@ executable kellisp-exe
       base >=4.7 && <5
     , haskeline
     , kellisp
+    , megaparsec
+    , text
   default-language: Haskell2010
 
 test-suite kellisp-test
@@ -66,4 +72,6 @@ test-suite kellisp-test
     , haskeline
     , hspec
     , kellisp
+    , megaparsec
+    , text
   default-language: Haskell2010
