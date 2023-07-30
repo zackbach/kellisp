@@ -74,13 +74,22 @@ parseList :: Parser LispVal
 parseList = lexeme
   $ between (symbol "(") (symbol ")") (List <$> many parseExpr)
 
+-- | Parses a quoted value `'(x y)` as `(quote (x y))`
+parseQuote :: Parser LispVal
+parseQuote = lexeme
+  $ do
+    _ <- symbol "'"
+    v <- parseExpr
+    return $ List [Atom "quote", v]
+
 -- | Parses a sexpression
 parseExpr :: Parser LispVal
 parseExpr = parseReserved
-  <|> parseAtom
-  <|> parseString
-  <|> parseSignedNumber
+  <|> parseQuote
   <|> parseList
+  <|> parseString
+  <|> parseAtom
+  <|> parseSignedNumber
 
 -- | Parses the entire sexpression to the end of file
 -- currently, this ensures there aren't extra symbols after the sexpression
