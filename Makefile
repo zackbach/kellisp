@@ -6,15 +6,21 @@
 all:
 	stack build --fast
 
-# used for more complete builds, with docs and optimization
+# used for more complete builds, with optimization
 .PHONY: build
 build:
-	stack build --haddock
+	stack build
+
+# builds and subsequently runs the REPL
+.PHONY: repl
+repl:
+	stack build
+	stack exec kellisp-exe
 
 # used to run test suite
 .PHONY: test
 test:
-	stack test --fast --haddock
+	stack test --fast
 
 # cleans out any temp files, executables, etc
 .PHONY: clean
