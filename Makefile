@@ -17,6 +17,12 @@ repl:
 	stack build
 	stack exec kellisp-exe
 
+# generates documentation for build / dependencies
+# NOTE: maybe later, pass along arguments
+.PHONY: docs
+docs:
+	stack haddock
+
 # used to run test suite
 .PHONY: test
 test:
