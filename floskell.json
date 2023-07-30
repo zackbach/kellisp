@@ -1,4 +1,9 @@
 {
   "language": "Haskell2010",
-  "style": "gibiansky"
+  "style": "gibiansky",
+  "formatting": {
+    "align": {
+      "matches": true
+    }
+  }
 }

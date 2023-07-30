@@ -22,7 +22,7 @@ eval = id
 
 -- | Pretty-prints some LispVal
 printVal :: Either String LispVal -> String
-printVal = either show show
+printVal = either id show
 
 -- | Reads Text as a LispVal, which is evaluated and "printed"
 -- note, actually returned as a string and printing is postponed
