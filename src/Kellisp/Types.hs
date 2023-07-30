@@ -10,13 +10,5 @@ data LispVal
   | String T.Text
   | Bool Bool
   | Nil
-
-{- Later, can include
-DottedList [LispVal] LispVal
-Characters
-Floats / more numbers
-Vectors
-Hash-maps
--}
-
--- figure out how to handle comments too: what should be returned?
+  -- later, we will add a pretty-printer, but this works for now
+  deriving Show
