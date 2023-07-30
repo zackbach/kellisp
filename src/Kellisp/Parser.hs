@@ -18,7 +18,8 @@ type Parser = Parsec Void T.Text
 -- | Parser for the special symbols that are permitted in identifiers
 --  where the special identifiers are specified in R5RS
 specialSymbol :: Parser Char
-specialSymbol = oneOf ("!$%&*/:<=>?^_~" :: String) <?> "identifier symbol"
+-- note that what is considered a special identifier varies in different sources
+specialSymbol = oneOf ("!$%&*/+-:<=>?^_~" :: String) <?> "identifier symbol"
 
 -- | Space consumer used for lexing
 --  allowing multi-line comments with Racket's syntax
@@ -72,7 +73,10 @@ parseSignedNumber = lexeme
 -- | Parses a list of LispVals surrounded by parentheses
 parseList :: Parser LispVal
 parseList = lexeme
-  $ between (symbol "(") (symbol ")") (List <$> many parseExpr)
+  $ between
+    (symbol "(")
+    (symbol ")" <?> "matched parentheses")
+    (List <$> many parseExpr)
 
 -- | Parses a quoted value `'(x y)` as `(quote (x y))`
 parseQuote :: Parser LispVal
@@ -84,7 +88,8 @@ parseQuote = lexeme
 
 -- | Parses a sexpression
 parseExpr :: Parser LispVal
-parseExpr = parseReserved
+parseExpr = label "valid expression"
+  $ parseReserved
   <|> parseQuote
   <|> parseList
   <|> parseString
