@@ -1,12 +1,13 @@
 module Kellisp.Types where
 
-import Data.Text qualified as T (Text)
+import qualified Data.Text as T (Text)
 
 -- | Represents all values in the AST
 data LispVal
   = Atom T.Text
   | List [LispVal]
-  | Number Integer
+  | Integer Integer
+  | Double Double
   | String T.Text
   | Bool Bool
   | Nil

@@ -2,12 +2,13 @@
 
 module Kellisp.Parser where
 
-import Data.Text qualified as T
+import Data.Scientific (floatingOrInteger)
+import qualified Data.Text as T
 import Data.Void (Void)
 import Kellisp.Types
 import Text.Megaparsec
 import Text.Megaparsec.Char
-import Text.Megaparsec.Char.Lexer qualified as L
+import qualified Text.Megaparsec.Char.Lexer as L
 
 -- | The main parsing type, defined as a synonym for clean signatures
 type Parser = Parsec Void T.Text
@@ -38,7 +39,7 @@ symbol = L.symbol spaceConsumer
 parseAtom :: Parser LispVal
 parseAtom = do
   first <- letterChar <|> specialSymbol
-  rest <- some (alphaNumChar <|> specialSymbol)
+  rest <- many (alphaNumChar <|> specialSymbol)
   -- we read first and rest separately, since we cannot start with numbers
   -- we also pass the returned LispVal parser into lexeme, consuming whitespace
   lexeme $ return $ Atom $ T.pack (first : rest)
@@ -57,5 +58,29 @@ parseString = do
   s <- manyTill L.charLiteral (char '"')
   lexeme $ return $ String $ T.pack s
 
+-- | Parses a signed integer or signed double
+parseSignedNumber :: Parser LispVal
+parseSignedNumber = do
+  n <- L.signed (return ()) L.scientific
+  case floatingOrInteger n of
+    Left d -> lexeme $ return $ Double d
+    Right i -> lexeme $ return $ Integer i
 
--- for numbers, try L.decimal, L.float, L.signed, etc
+-- | Parses a list of LispVals surrounded by parentheses
+parseList :: Parser LispVal
+parseList = between (symbol "(") (symbol ")") (List <$> many parseExpr)
+
+-- | Parses a sexpression
+parseExpr :: Parser LispVal
+parseExpr =
+  parseReserved
+    <|> parseAtom
+    <|> parseString
+    <|> parseSignedNumber
+    <|> parseList
+
+-- | Parses the entire sexpression to the end of file
+-- currently, this ensures there aren't extra symbols after the sexpression
+-- but this may have to be changed when file parsing is added
+parseLispVal :: Parser LispVal
+parseLispVal = between spaceConsumer eof parseExpr

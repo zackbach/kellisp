@@ -3,26 +3,31 @@
 -- For now, this is limited to REPL functions.
 module Kellisp where
 
+import qualified Data.Text as T
+import Kellisp.Parser
+import Kellisp.Types
 import System.Console.Haskeline
-
--- | For now, a LispVal is simply a String, but this will be expanded
-type LispVal = String
+import Text.Megaparsec ( parse, errorBundlePretty )
 
 -- | Reads Text into a LispVal
---  TODO: Update with Parser, may have to change signature to Text
-readVal :: String -> LispVal
-readVal = id
+readVal :: T.Text -> Either String LispVal
+readVal t = case parse parseLispVal "" t of
+              Left bundle -> Left $ errorBundlePretty bundle
+              Right val -> Right val
+
+-- TODO: consider how to handle errors more effectively here
 
 -- | Evaluates a LispVal
-eval :: LispVal -> LispVal
+eval :: Either String LispVal -> Either String LispVal
 eval = id
 
 -- | Pretty-prints some LispVal
-printVal :: LispVal -> String
-printVal = id
+printVal :: Either String LispVal -> String
+printVal = show
 
--- | Reads Text as a LispVal, which is evaluated and printed
-rep :: String -> String
+-- | Reads Text as a LispVal, which is evaluated and "printed"
+-- note, actually returned as a string and printing is postponed
+rep :: T.Text -> String
 rep = printVal . eval . readVal
 
 -- | Read eval print loop
@@ -36,5 +41,5 @@ repl = runInputT defaultSettings loop
         -- just add another pattern for the Just case, like Just "quit", etc
         Nothing -> return ()
         Just input -> do
-          outputStrLn $ rep input
+          outputStrLn $ rep $ T.pack input
           loop
