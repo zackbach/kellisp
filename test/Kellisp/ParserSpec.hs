@@ -66,6 +66,8 @@ spec = do
             $ parse parseLispVal "" "-123.45" `shouldParse` Double (-123.45)
           it "parses explicitly positive doubles"
             $ parse parseLispVal "" "+123.45" `shouldParse` Double 123.45
+          it "parses numbers ending in .0"
+            $ parse parseLispVal "" "1.0" `shouldParse` Double 1.0
 
   describe "parsing lists"
     $ do

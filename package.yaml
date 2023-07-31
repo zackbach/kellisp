@@ -22,8 +22,10 @@ dependencies:
 - base >= 4.7 && < 5
 - haskeline
 - text
+- containers
 - scientific
 - megaparsec
+- mtl
 
 ghc-options:
 - -Wall

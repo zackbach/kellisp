@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Kellisp.Parser where
+module Kellisp.Parser (parseLispVal, parseExpr) where
 
-import           Data.Scientific (floatingOrInteger)
 import qualified Data.Text as T
 import           Data.Void (Void)
 import           Kellisp.Types
@@ -66,14 +65,19 @@ parseString = lexeme
     s <- manyTill L.charLiteral (char '"')
     return $ String $ T.pack s
 
+-- | Parses a signed integer
+parseSignedInt :: Parser LispVal
+parseSignedInt = lexeme $ Integer <$> L.signed (return ()) L.decimal
+
+-- | Parses a signed double
+parseSignedDouble :: Parser LispVal
+parseSignedDouble = lexeme $ Double <$> L.signed (return ()) L.float
+
 -- | Parses a signed integer or signed double
 parseSignedNumber :: Parser LispVal
-parseSignedNumber = lexeme
-  $ do
-    n <- L.signed (return ()) L.scientific
-    case floatingOrInteger n of
-      Left d  -> return $ Double d
-      Right i -> return $ Integer i
+-- originally this used scientific but that would parse 1.0 as 1
+-- so instead we use try. this could be made more optimal to prevent the backtrack
+parseSignedNumber = try parseSignedDouble <|> parseSignedInt
 
 -- | Parses a list of LispVals surrounded by parentheses
 parseList :: Parser LispVal

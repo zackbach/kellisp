@@ -27,6 +27,8 @@ source-repository head
 library
   exposed-modules:
       Kellisp
+      Kellisp.Env
+      Kellisp.Eval
       Kellisp.Parser
       Kellisp.Types
   other-modules:
@@ -36,8 +38,10 @@ library
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers
     , haskeline
     , megaparsec
+    , mtl
     , scientific
     , text
   default-language: Haskell2010
@@ -51,9 +55,11 @@ executable kellisp-exe
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers
     , haskeline
     , kellisp
     , megaparsec
+    , mtl
     , scientific
     , text
   default-language: Haskell2010
@@ -71,11 +77,13 @@ test-suite kellisp-test
       hspec-discover:hspec-discover
   build-depends:
       base >=4.7 && <5
+    , containers
     , haskeline
     , hspec
     , hspec-megaparsec
     , kellisp
     , megaparsec
+    , mtl
     , scientific
     , text
   default-language: Haskell2010
