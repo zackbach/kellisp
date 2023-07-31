@@ -57,5 +57,6 @@ tests:
     dependencies:
     - kellisp
     - hspec
+    - hspec-megaparsec
     build-tools:
     - hspec-discover

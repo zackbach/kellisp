@@ -62,7 +62,7 @@ test-suite kellisp-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      KellispSpec
+      Kellisp.ParserSpec
       Paths_kellisp
   hs-source-dirs:
       test
@@ -73,6 +73,7 @@ test-suite kellisp-test
       base >=4.7 && <5
     , haskeline
     , hspec
+    , hspec-megaparsec
     , kellisp
     , megaparsec
     , scientific

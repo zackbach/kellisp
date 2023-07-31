@@ -4,6 +4,9 @@
   "formatting": {
     "align": {
       "matches": true
+    },
+    "options": {
+      "preserve-vertical-space": true
     }
   }
 }

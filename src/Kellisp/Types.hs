@@ -12,6 +12,7 @@ data LispVal = Atom T.Text
              | String T.Text
              | Bool Bool
              | Nil
+             deriving Eq
 
 -- | Pretty-prints a LispVal as Text
 showVal :: LispVal -> T.Text

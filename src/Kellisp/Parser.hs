@@ -19,7 +19,7 @@ type Parser = Parsec Void T.Text
 --  where the special identifiers are specified in R5RS
 specialSymbol :: Parser Char
 -- note that what is considered a special identifier varies in different sources
-specialSymbol = oneOf ("!$%&*/+-:<=>?^_~" :: String) <?> "identifier symbol"
+specialSymbol = oneOf ("!$%&*/:<=>?^_~" :: String) <?> "identifier symbol"
 
 -- | Space consumer used for lexing
 --  allowing multi-line comments with Racket's syntax
@@ -46,10 +46,15 @@ parseAtom = lexeme
     -- we also pass the returned LispVal parser into lexeme, consuming whitespace
     return $ Atom $ T.pack (first:rest)
 
+-- | Parses a peculiar identifier, which is `+` or `-`
+-- These are treated specially, since numbers can be made signed
+-- see <https://people.csail.mit.edu/jaffer/r5rs/Lexical-structure.html>
+parsePeculiarIdentifier :: Parser LispVal
+parsePeculiarIdentifier = Atom <$> (symbol "+" <|> symbol "-")
+
 -- | Parses a reserved symbol, specifically `nil`, `#t`, or `#f`
 parseReserved :: Parser LispVal
-parseReserved = lexeme
-  $ Nil <$ symbol "nil"
+parseReserved = Nil <$ symbol "nil"
   <|> Bool True <$ symbol "#t"
   <|> Bool False <$ symbol "#f"
 
@@ -89,12 +94,15 @@ parseQuote = lexeme
 -- | Parses a sexpression
 parseExpr :: Parser LispVal
 parseExpr = label "valid expression"
-  $ parseReserved
+  $ parseReserved -- we parse reserved first, so `nil` is not Atom "nil"
   <|> parseQuote
   <|> parseList
   <|> parseString
+  -- we want to parse `+` as an atom, but `+12` as a number
+  -- using try should be moderately performant, since it fails after one char
+  <|> try parseSignedNumber
+  <|> parsePeculiarIdentifier
   <|> parseAtom
-  <|> parseSignedNumber
 
 -- | Parses the entire sexpression to the end of file
 -- currently, this ensures there aren't extra symbols after the sexpression
