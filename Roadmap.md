@@ -5,3 +5,4 @@ Potential features (to be added much later)
 - [ ] More numbers (with Scheme number notation), exact vs inexact
 - [ ] Haskeline tab completion
 - [ ] Better parser error messages
+- [ ] Better error handling for IO functions

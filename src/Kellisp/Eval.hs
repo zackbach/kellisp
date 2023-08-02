@@ -2,8 +2,11 @@
 
 module Kellisp.Eval (eval) where
 
+import           Control.Exception
 import           Control.Monad.Reader
+
 import qualified Data.Map as Map
+
 import           Kellisp.Types
 
 -- | Evaluates a LispVal using the Eval monad
@@ -19,14 +22,11 @@ eval (Double d) = return $ Double d
 eval (Bool b) = return $ Bool b
 eval Nil = return Nil
 eval (List []) = return Nil
--- we evaluate atoms by looking them up in the environment
--- without a way to update the environment, this is currently useless (lol)
 eval (Atom a) = do
   env <- ask -- ask the ReaderT for the stored env
   case Map.lookup a env of
     Just x  -> return x
-    -- we will handle errors later, for now we just return Nil
-    Nothing -> return Nil
+    Nothing -> throw $ UnboundVar a
 -- function application:
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function
@@ -36,6 +36,5 @@ eval (List (f:args)) = do
     (PrimFun pf) -> fn pf args'
     -- for lambda, we evaluate in the stored context using local
     (Lambda lf ctx) -> local (const ctx) $ fn lf args'
-    -- again, we just return Nil for an error
-    _ -> return Nil -- attempted to apply a non-function
-eval other = return other
+    _ -> throw $ NotFunction fun
+eval _ = throw BadSpecialForm

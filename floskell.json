@@ -6,7 +6,8 @@
       "matches": true
     },
     "options": {
-      "preserve-vertical-space": true
+      "preserve-vertical-space": true,
+      "sort-imports": true
     }
   }
 }
