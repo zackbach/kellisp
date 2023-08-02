@@ -4,6 +4,7 @@
 -- our primitive functions are defined
 module Kellisp.Env (env) where
 
+import           Control.Monad
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import           Kellisp.Types
@@ -11,8 +12,8 @@ import           Kellisp.Types
 -- for now, we define primitives here, but they will likely be split up
 -- we start by defining a large [(T.Text, LispVal)], then convert to Map
 prims :: [(T.Text, LispVal)]
-prims = [ ("+", mkP $ mkBinop $ numBinop (+))
-        , ("*", mkP $ mkBinop $ numBinop (*))
+prims = [ ("+", mkP $ foldM (numBinop (+)) (Integer 0))
+        , ("*", mkP $ foldM (numBinop (*)) (Integer 1))
         , ("-", mkP $ mkBinop $ numBinop (-))
         , ("/", mkP $ mkBinop $ fracBinop (/))]
 
@@ -27,6 +28,7 @@ mkP :: ([LispVal] -> Eval LispVal) -> LispVal
 mkP = PrimFun . IFunc
 
 -- | Runs a binary operator on a list of LispVals
+-- we always take in a list of parameters, and this handles errors
 mkBinop :: (LispVal -> LispVal -> Eval LispVal) -> [LispVal] -> Eval LispVal
 mkBinop op [x, y] = op x y
 -- for now, return Nil to handle errors
