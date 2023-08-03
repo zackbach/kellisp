@@ -23,9 +23,9 @@ dependencies:
 - haskeline
 - text
 - containers
-- scientific
 - megaparsec
 - mtl
+- hspec
 
 ghc-options:
 - -Wall

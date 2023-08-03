@@ -84,6 +84,8 @@ spec = do
         $ parse parseLispVal "" "((1 2) (3 4))"
         `shouldParse` List
           [List [Integer 1, Integer 2], List [Integer 3, Integer 4]]
+      it "fails on mismatched lists"
+        $ parse parseLispVal "" `shouldFailOn` "(1 2 3"
 
   describe "parsing quote"
     $ do

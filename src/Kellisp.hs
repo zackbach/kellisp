@@ -44,8 +44,10 @@ repl = runInputT defaultSettings $ loop defaultEnv
           -- and we wrap in a try to handle any errors that may arise
           res <- liftIO
             $ try
+            -- yes, this is super gross... maybe add InputT to Eval to avoid
+            -- "leaving" and "re-entering" the monad stack in this function
             $ runReaderT
-              (liftM2 (,) ask (unEval (readEval $ T.pack input)))
+              (liftM2 (,) ask $ unEval $ readEval $ T.pack input)
               env
           case res of
             Left (err :: SomeException) -> outputStrLn (show err) >> loop env

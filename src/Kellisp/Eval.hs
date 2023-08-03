@@ -13,9 +13,9 @@ import           Kellisp.Types
 -- note that we do not pass in the Env, since that is done
 -- using runReaderT (after unEval to unwrap)
 eval :: LispVal -> Eval LispVal
--- quote postpones evaluation for a single argument
--- TODO: figure out error handling for (quote 1 2 ...)
+-- quote postpones evaluation for arguments
 eval (List [Atom "quote", x]) = return x
+eval (List (Atom "quote" : xs)) = return $ List xs
 -- some primitives are "autoquoted":
 eval (Integer i) = return $ Integer i
 eval (Double d) = return $ Double d

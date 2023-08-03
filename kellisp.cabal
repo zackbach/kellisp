@@ -40,9 +40,9 @@ library
       base >=4.7 && <5
     , containers
     , haskeline
+    , hspec
     , megaparsec
     , mtl
-    , scientific
     , text
   default-language: Haskell2010
 
@@ -57,10 +57,10 @@ executable kellisp-exe
       base >=4.7 && <5
     , containers
     , haskeline
+    , hspec
     , kellisp
     , megaparsec
     , mtl
-    , scientific
     , text
   default-language: Haskell2010
 
@@ -68,7 +68,9 @@ test-suite kellisp-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Kellisp.EvalSpec
       Kellisp.ParserSpec
+      Kellisp.SpecUtils
       Paths_kellisp
   hs-source-dirs:
       test
@@ -84,6 +86,5 @@ test-suite kellisp-test
     , kellisp
     , megaparsec
     , mtl
-    , scientific
     , text
   default-language: Haskell2010
