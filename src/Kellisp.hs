@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 -- |
 -- Contains all outward-facing functions used to interact with Kellisp.
 -- For now, this is limited to REPL functions.

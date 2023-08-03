@@ -20,6 +20,7 @@ eval (List [Atom "quote", x]) = return x
 eval (Integer i) = return $ Integer i
 eval (Double d) = return $ Double d
 eval (Bool b) = return $ Bool b
+eval (String s) = return $ String s
 eval Nil = return Nil
 eval (List []) = return Nil
 eval (Atom a) = do
