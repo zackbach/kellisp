@@ -2,39 +2,21 @@
 
 -- | Here, we define a basic environment in which
 -- our primitive functions are defined
-module Kellisp.Env (defaultEnv) where
+module Kellisp.Environment.Numeric (numericEnv) where
 
 import           Control.Exception
 import           Control.Monad
 
-import qualified Data.Map as Map
 import qualified Data.Text as T
 
 import           Kellisp.Types
+import           Kellisp.Environment.PrimUtils
 
--- for now, we define primitives here, but they will likely be split up
--- we start by defining a large [(T.Text, LispVal)], then convert to Map
-prims :: [(T.Text, LispVal)]
-prims = [ ("+", mkP $ foldM (numBinop (+)) (Integer 0))
-        , ("*", mkP $ foldM (numBinop (*)) (Integer 1))
-        , ("-", mkP $ mkBinop $ numBinop (-))
-        , ("/", mkP $ mkBinop $ fracBinop (/))]
-
--- | Represents the starting primitive environment that evaluation occurs in
-defaultEnv :: Env
-defaultEnv = Map.fromList prims
-
--- recall that Env is a synonym for Map.Map T.Text LispVal
--- we want to populate that map with PrimFun functions
--- | Packages up a function into a PrimFun LispVal
-mkP :: ([LispVal] -> Eval LispVal) -> LispVal
-mkP = PrimFun . IFunc
-
--- | Runs a binary operator on a list of LispVals
--- we always take in a list of parameters, and this handles errors
-mkBinop :: (LispVal -> LispVal -> Eval LispVal) -> [LispVal] -> Eval LispVal
-mkBinop op [x, y] = op x y
-mkBinop _ vs      = throw $ NumArgs 2 vs
+numericEnv :: [(T.Text, LispVal)]
+numericEnv = [ ("+", mkP $ foldM (numBinop (+)) (Integer 0))
+             , ("*", mkP $ foldM (numBinop (*)) (Integer 1))
+             , ("-", mkP $ mkBinop $ numBinop (-))
+             , ("/", mkP $ mkBinop $ fracBinop (/))]
 
 -- | Casts two numbers into the more general type, if both numeric types
 -- otherwise, returns the (first) value that could not be cast
@@ -59,6 +41,7 @@ numBinop op n m = case numCast n m of
   -- this should never happen, but needed for exhaustive pattern match
   _ -> throw LispError
 
+-- TODO: consider making this division-specific, allowing for div-by-0 error
 -- | Packages an operation for Fractionals exclusively into LispVal form
 fracBinop :: (forall a. Fractional a => a -> a -> a)
           -> LispVal

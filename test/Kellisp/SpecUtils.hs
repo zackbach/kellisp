@@ -5,7 +5,7 @@ import           Control.Monad.Reader
 import qualified Data.Text as T
 
 import           Kellisp
-import           Kellisp.Env
+import           Kellisp.Environment
 import           Kellisp.Types
 
 import           Test.Hspec

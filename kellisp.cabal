@@ -27,7 +27,9 @@ source-repository head
 library
   exposed-modules:
       Kellisp
-      Kellisp.Env
+      Kellisp.Environment
+      Kellisp.Environment.Numeric
+      Kellisp.Environment.PrimUtils
       Kellisp.Eval
       Kellisp.Parser
       Kellisp.Types

@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 -- |
 -- Contains all outward-facing functions used to interact with Kellisp.
 -- For now, this is limited to REPL functions.
@@ -8,8 +10,8 @@ import           Control.Monad.Reader
 
 import qualified Data.Text as T
 
-import           Kellisp.Env
-import           Kellisp.Eval
+import           Kellisp.Environment
+import Kellisp.Eval ( eval )
 import           Kellisp.Parser
 import           Kellisp.Types
 
