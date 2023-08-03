@@ -2,7 +2,7 @@
 
 -- | Here, we define a basic environment in which
 -- our primitive functions are defined
-module Kellisp.Env (env) where
+module Kellisp.Env (defaultEnv) where
 
 import           Control.Exception
 import           Control.Monad
@@ -21,8 +21,8 @@ prims = [ ("+", mkP $ foldM (numBinop (+)) (Integer 0))
         , ("/", mkP $ mkBinop $ fracBinop (/))]
 
 -- | Represents the starting primitive environment that evaluation occurs in
-env :: Env
-env = Map.fromList prims
+defaultEnv :: Env
+defaultEnv = Map.fromList prims
 
 -- recall that Env is a synonym for Map.Map T.Text LispVal
 -- we want to populate that map with PrimFun functions
