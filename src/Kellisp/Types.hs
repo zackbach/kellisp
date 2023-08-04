@@ -73,7 +73,8 @@ data LispException =
   | ParseError (ParseErrorBundle T.Text Void)
   | BadSpecialForm
   | LispError
-
+  | DivByZero
+  
 showException :: LispException -> T.Text
 showException (NumArgs n args) = T.concat
   [ "Error: number of arguments\n"
@@ -91,6 +92,7 @@ showException (ParseError bundle) =
   T.concat ["Error: parsing failure\n", T.pack $ errorBundlePretty bundle]
 showException BadSpecialForm = "Error: bad special form not recognized"
 showException LispError = "Error: The programmer of Kellisp made a mistake :("
+showException DivByZero = "Error: cannot divide by zero"
 
 instance Show LispException where
   show = T.unpack . showException
