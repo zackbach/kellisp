@@ -56,7 +56,7 @@ numericEnv :: [(Text, LispVal)]
 numericEnv = [ ("+", mkP $ foldM (numBinop (+)) $ Integer 0)
              , ("*", mkP $ foldM (numBinop (*)) $ Integer 1)
              , ("-", mkP $ foldCase1 (numBinop (-)) $ numUnop negate)
-             , ("/", mkP $ foldCase1 division $ numUnop id)]
+             , ("/", mkP $ foldCase1 division $ doubleUnop id)]
 
 -- | Packages a binary numeric operation into LispVal form
 numBinop :: (forall a. Num a => a -> a -> a) -> BinOp
@@ -72,6 +72,13 @@ numUnop :: (forall a. Num a => a -> a) -> UnOp
 numUnop op (Integer x) = return $ Integer $ op x
 numUnop op (Double x) = return $ Double $ op x
 numUnop _ v = throw $ TypeMismatch "Expected numeric type" v
+
+-- | Packages a unary numeric operation for doubles into LispVal form
+doubleUnop :: (forall a. Floating a => a -> a) -> UnOp
+doubleUnop op (Integer x) = return $ Double $ op $ fromInteger x
+doubleUnop op (Double x) = return $ Double $ op x
+doubleUnop _ v = throw $ TypeMismatch "Expected numeric type" v
+
 
 -- TODO: consider making this division-specific, allowing for div-by-0 error
 -- | Packages an operation for Fractionals exclusively into LispVal form

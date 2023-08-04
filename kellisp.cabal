@@ -44,7 +44,6 @@ library
       base >=4.7 && <5
     , containers
     , haskeline
-    , hspec
     , megaparsec
     , mtl
     , text
@@ -61,7 +60,6 @@ executable kellisp-exe
       base >=4.7 && <5
     , containers
     , haskeline
-    , hspec
     , kellisp
     , megaparsec
     , mtl
@@ -72,6 +70,9 @@ test-suite kellisp-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Kellisp.Environment.BooleanSpec
+      Kellisp.Environment.NumericSpec
+      Kellisp.Environment.OrderedSpec
       Kellisp.EvalSpec
       Kellisp.ParserSpec
       Kellisp.SpecUtils

@@ -11,7 +11,7 @@ import           Control.Monad.Reader
 import qualified Data.Text as T
 
 import           Kellisp.Environment
-import Kellisp.Eval ( eval )
+import           Kellisp.Eval (eval)
 import           Kellisp.Parser
 import           Kellisp.Types
 
@@ -36,7 +36,6 @@ loop env = do
 
 -- TODO: these helpers could probably be cleaned up a bit
 -- and their signatures could be enhanced / generalized
-
 -- | attempts to evaluate the input in the given environment, catching errors
 -- and passing in the updated environment to the next loop iteration
 handleInput :: Env -> T.Text -> InputT IO ()

@@ -1,13 +1,13 @@
 cradle:
-  stack:
-    - path: "./src"
-      component: "kellisp:lib"
+  cabal:
+    - path: "src"
+      component: "lib:kellisp"
 
-    - path: "./app/Main.hs"
+    - path: "app/Main.hs"
       component: "kellisp:exe:kellisp-exe"
 
-    - path: "./app/Paths_kellisp.hs"
+    - path: "app/Paths_kellisp.hs"
       component: "kellisp:exe:kellisp-exe"
 
-    - path: "./test"
+    - path: "test"
       component: "kellisp:test:kellisp-test"

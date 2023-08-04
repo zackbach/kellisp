@@ -2,10 +2,7 @@
 
 module Kellisp.EvalSpec where
 
-import           Kellisp.Types
 import           Kellisp.SpecUtils
-
-import           Test.Hspec
 
 spec :: Spec
 spec = do

@@ -2,10 +2,11 @@
 
 module Kellisp.ParserSpec where
 
-import           Kellisp.Types
 import           Kellisp.Parser
-import           Test.Hspec
+import           Kellisp.SpecUtils
+
 import           Test.Hspec.Megaparsec
+
 import           Text.Megaparsec
 
 -- for now, parseLispVal and parseExpr are treated the same
@@ -96,7 +97,8 @@ spec = do
         $ parse parseLispVal "" "'(x y)"
         `shouldParse` List [Atom "quote", List [Atom "x", Atom "y"]]
       it "allows whitespace after quote"
-        $ parse parseLispVal "" "'   x" `shouldParse` List [Atom "quote", Atom "x"]
+        $ parse parseLispVal "" "'   x"
+        `shouldParse` List [Atom "quote", Atom "x"]
 
   describe "parsing strings"
     $ do

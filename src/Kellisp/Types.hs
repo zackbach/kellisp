@@ -74,7 +74,8 @@ data LispException =
   | BadSpecialForm
   | LispError
   | DivByZero
-  
+  deriving Eq
+
 showException :: LispException -> T.Text
 showException (NumArgs n args) = T.concat
   [ "Error: number of arguments\n"
