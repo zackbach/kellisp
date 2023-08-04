@@ -4,13 +4,7 @@
 -- our primitive functions are defined
 module Kellisp.Environment.Numeric (numericEnv) where
 
-import           Control.Exception
-import           Control.Monad
-
-import qualified Data.Text as T
-
 import           Kellisp.Environment.PrimUtils
-import           Kellisp.Types
 
 {-
 PREDICATES
@@ -57,7 +51,8 @@ abs
 gcd
 lcm
 -}
-numericEnv :: [(T.Text, LispVal)]
+-- note: we only need Text due to the PrimUtils re-export
+numericEnv :: [(Text, LispVal)]
 numericEnv = [ ("+", mkP $ foldM (numBinop (+)) $ Integer 0)
              , ("*", mkP $ foldM (numBinop (*)) $ Integer 1)
              , ("-", mkP $ foldCase1 (numBinop (-)) $ numUnop negate)

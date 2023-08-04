@@ -1,12 +1,26 @@
-module Kellisp.Environment.PrimUtils where
+{-|
+Contains utilities useful for defining other primitive functions.
+Re-exports relevant functions as well.
+-}
 
-import           Control.Exception
-import           Control.Monad
+module Kellisp.Environment.PrimUtils
+    ( module Kellisp.Environment.PrimUtils
+    , module Kellisp.Types
+    , T.Text
+    , throw
+    , foldM) where
+
+import           Control.Exception (throw)
+import           Control.Monad (foldM)
+
+import qualified Data.Text as T (Text)
 
 import           Kellisp.Types
 
+-- | Represents a unary operation over LispVal
 type UnOp = LispVal -> Eval LispVal
 
+-- | Represents a binary operation over LispVal
 type BinOp = LispVal -> LispVal -> Eval LispVal
 
 -- | Packages up a function into a PrimFun LispVal
@@ -19,14 +33,6 @@ mkBinop :: BinOp -> [LispVal] -> Eval LispVal
 mkBinop op [x, y] = op x y
 mkBinop _ vs      = throw $ NumArgs 2 vs
 
-{-
--- | folds a binary operator through a list of LispVals,
--- associating to the left, with the leftmost value as the base
-foldVal1 :: BinOp -> [LispVal] -> Eval LispVal
--- we have to make the type signature concrete so we can throw a LispException
-foldVal1 _ [] = throw $ NumArgs 1 []
-foldVal1 op (x:xs) = foldM op x xs
--}
 -- | folds a binary operator through a non-empty list of LispVals,
 -- but if there is only one value, applies the unary operator instead
 foldCase1 :: BinOp -> UnOp -> [LispVal] -> Eval LispVal

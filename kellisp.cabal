@@ -28,6 +28,7 @@ library
   exposed-modules:
       Kellisp
       Kellisp.Environment
+      Kellisp.Environment.Boolean
       Kellisp.Environment.Numeric
       Kellisp.Environment.Ordered
       Kellisp.Environment.PrimUtils
