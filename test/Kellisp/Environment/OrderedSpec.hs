@@ -69,3 +69,10 @@ spec = do
             $ "(string<? \"A\" \"a\")" `shouldEval` Bool True
           it "compares two case sensitive with >"
             $ "(string>? \"hi\" \"hI\")" `shouldEval` Bool True
+
+  describe "boolean comparisons"
+    $ do
+      it "compares many booleans"
+        $ "(boolean=? #t #t (= 1 1) #t)" `shouldEval` Bool True
+      it "compares unequal booleans"
+        $ "(boolean=? #t #f)" `shouldEval` Bool False

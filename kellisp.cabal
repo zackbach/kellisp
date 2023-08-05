@@ -74,6 +74,7 @@ test-suite kellisp-test
       Kellisp.Environment.BooleanSpec
       Kellisp.Environment.NumericSpec
       Kellisp.Environment.OrderedSpec
+      Kellisp.Environment.TypePredicatesSpec
       Kellisp.EvalSpec
       Kellisp.ParserSpec
       Kellisp.SpecUtils

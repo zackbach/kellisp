@@ -8,7 +8,7 @@ spec :: Spec
 spec = do
   describe "auto-quoting of certain primitives"
     $ do
-      it "evaluates nil as nil" $ "nil" `shouldEval` Nil
+      it "evaluates #nil as nil" $ "#nil" `shouldEval` Nil
       it "evaluates #t as #t" $ "#t" `shouldEval` Bool True
       it "evaluates #f as #f" $ "#f" `shouldEval` Bool False
       it "evaluates integers as integers" $ "123" `shouldEval` Integer 123

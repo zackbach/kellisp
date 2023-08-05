@@ -4,7 +4,9 @@ module Kellisp.Parser (parseLispVal, parseExpr) where
 
 import qualified Data.Text as T
 import           Data.Void (Void)
+
 import           Kellisp.Types
+
 import           Text.Megaparsec
 import           Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
@@ -51,9 +53,9 @@ parseAtom = lexeme
 parsePeculiarIdentifier :: Parser LispVal
 parsePeculiarIdentifier = Atom <$> (symbol "+" <|> symbol "-")
 
--- | Parses a reserved symbol, specifically `nil`, `#t`, or `#f`
+-- | Parses a reserved symbol, specifically `#nil`, `#t`, or `#f`
 parseReserved :: Parser LispVal
-parseReserved = Nil <$ symbol "nil"
+parseReserved = Nil <$ symbol "#nil"
   <|> Bool True <$ symbol "#t"
   <|> Bool False <$ symbol "#f"
 
@@ -98,7 +100,7 @@ parseQuote = lexeme
 -- | Parses a sexpression
 parseExpr :: Parser LispVal
 parseExpr = label "valid expression"
-  $ parseReserved -- we parse reserved first, so `nil` is not Atom "nil"
+  $ parseReserved
   <|> parseQuote
   <|> parseList
   <|> parseString

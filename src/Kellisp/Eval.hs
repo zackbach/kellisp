@@ -15,7 +15,7 @@ import           Kellisp.Types
 eval :: LispVal -> Eval LispVal
 -- quote postpones evaluation for arguments
 eval (List [Atom "quote", x]) = return x
-eval (List (Atom "quote" : xs)) = return $ List xs
+eval (List (Atom "quote":xs)) = return $ List xs
 -- some primitives are "autoquoted":
 eval (Integer i) = return $ Integer i
 eval (Double d) = return $ Double d
@@ -28,6 +28,15 @@ eval (Atom a) = do
   case Map.lookup a env of
     Just x  -> return x
     Nothing -> throw $ UnboundVar a
+eval (List (Atom "if":vs)) = do
+  case vs of
+    [condition, ifTrue, ifFalse] -> do
+      c <- eval condition
+      case c of
+        -- all values are truthy except #f
+        (Bool False) -> eval ifFalse
+        _  -> eval ifTrue
+    _ -> throw BadSpecialForm
 -- function application:
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function

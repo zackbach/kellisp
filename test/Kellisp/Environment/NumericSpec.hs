@@ -47,3 +47,48 @@ spec = do
             $ readRun "(/)" `shouldThrow` (== NumArgs 1 [])
           it "doesn't divide by zero"
             $ readRun "(/ 4 2 0 1)" `shouldThrow` (== DivByZero)
+
+  describe "division operations"
+    $ do
+      it "quotients numbers evenly" $ "(quotient 4 2)" `shouldEval` Integer 2
+      it "rounds down for quotient" $ "(quotient 4 3)" `shouldEval` Integer 1
+      it "doesn't allow zero division"
+        $ readRun "(quotient 4 0)" `shouldThrow` (== DivByZero)
+      it "doesn't quotient doubles"
+        -- note: (quotient 4 2.0) could be cast, but it currently errors as well
+        $ readRun "(quotient 4 1.5)"
+        `shouldThrow` (== TypeMismatch "Expected integer" (Double 1.5))
+
+      -- the tests above test division by zero and type issues, so we don't redo
+      it "modulo takes sign of second"
+        $ "(modulo -13 4)" `shouldEval` Integer 3
+      it "remainder takes sign of first"
+        $ "(remainder -13 4)" `shouldEval` Integer (-1)
+
+  -- NOTE: tests are missing for exp, log, sqrt, and trig functions
+  -- since they return doubles and equality is annoying
+  -- also, they are just taken directly from Haskell standard library
+
+  describe "rounding operations"
+    $ do
+      it "truncate rounds down for positive numbers"
+        $ "(truncate 3.5)" `shouldEval` Integer 3
+      it "truncate rounds up for negative numbers"
+        $ "(truncate -4.3)" `shouldEval` Integer (-4)
+
+      it "floor rounds down for positive numbers"
+        $ "(floor 3.5)" `shouldEval` Integer 3
+      it "floor rounds down for negative numbers"
+        $ "(floor -4.3)" `shouldEval` Integer (-5)
+
+      it "ceiling rounds up for positive numbers"
+        $ "(ceiling 3.5)" `shouldEval` Integer 4
+      it "ceiling rounds up for negative numbers"
+        $ "(ceiling -4.3)" `shouldEval` Integer (-4)
+
+      it "round rounds to the closer integer"
+        $ "(round -4.3)" `shouldEval` Integer (-4)
+      it "round rounds down to even number for .5"
+        $ "(round 3.5)" `shouldEval` Integer 4
+      it "round rounds up to even number for .5"
+        $ "(round 4.5)" `shouldEval` Integer 4

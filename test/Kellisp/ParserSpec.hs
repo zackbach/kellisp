@@ -39,12 +39,15 @@ spec = do
 
   describe "parsing reserved"
     $ do
-      it "parses nil as nil, not atom"
-        $ parse parseLispVal "" "nil" `shouldParse` Nil
+      it "parses #nil as #nil, not atom"
+        $ parse parseLispVal "" "#nil" `shouldParse` Nil
       it "parses #t" $ parse parseLispVal "" "#t" `shouldParse` Bool True
       it "parses #f" $ parse parseLispVal "" "#f" `shouldParse` Bool False
       it "removes trailing whitespace"
-        $ parse parseLispVal "" "nil   " `shouldParse` Nil
+        $ parse parseLispVal "" "#nil   " `shouldParse` Nil
+      it "parses nil? as a predicate"
+        $ parse parseLispVal "" "(nil? #nil)"
+        `shouldParse` List [Atom "nil?", Nil]
 
   describe "parsing numbers"
     $ do
