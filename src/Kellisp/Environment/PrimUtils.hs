@@ -33,6 +33,11 @@ mkBinop :: BinOp -> [LispVal] -> Eval LispVal
 mkBinop op [x, y] = op x y
 mkBinop _ vs      = throw $ NumArgs 2 vs
 
+-- | Runs a unary operator on a list of LispVals
+mkUnop :: UnOp -> [LispVal] -> Eval LispVal
+mkUnop op [v] = op v
+mkUnop _ vs = throw $ NumArgs 1 vs
+
 -- | folds a binary operator through a non-empty list of LispVals,
 -- but if there is only one value, applies the unary operator instead
 foldCase1 :: BinOp -> UnOp -> [LispVal] -> Eval LispVal

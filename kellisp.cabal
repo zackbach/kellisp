@@ -32,6 +32,7 @@ library
       Kellisp.Environment.Numeric
       Kellisp.Environment.Ordered
       Kellisp.Environment.PrimUtils
+      Kellisp.Environment.TypePredicates
       Kellisp.Eval
       Kellisp.Parser
       Kellisp.Types

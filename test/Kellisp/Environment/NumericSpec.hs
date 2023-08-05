@@ -42,7 +42,7 @@ spec = do
             $ "(/ 4 2)" `shouldEval` Double 2.0
           it "can divide two integers as an uneven double"
             $ "(/ 3 2)" `shouldEval` Double 1.5
-          it "can divide one number" $ "(/ 4)" `shouldEval` Double 4.0
+          it "can inverse one number" $ "(/ 4)" `shouldEval` Double 0.25
           it "doesn't divide nothing"
             $ readRun "(/)" `shouldThrow` (== NumArgs 1 [])
           it "doesn't divide by zero"
