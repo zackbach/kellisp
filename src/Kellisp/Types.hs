@@ -74,6 +74,7 @@ data LispException =
   | BadSpecialForm
   | LispError
   | DivByZero
+  | EmptyList
   deriving Eq
 
 showException :: LispException -> T.Text
@@ -92,8 +93,9 @@ showException (UnboundVar var) =
 showException (ParseError bundle) =
   T.concat ["Error: parsing failure\n", T.pack $ errorBundlePretty bundle]
 showException BadSpecialForm = "Error: bad special form not recognized"
-showException LispError = "Error: The programmer of Kellisp made a mistake :("
+showException LispError = "Error: the programmer of Kellisp made a mistake :("
 showException DivByZero = "Error: cannot divide by zero"
+showException EmptyList = "Error: expected a non-empty list, but got one"
 
 instance Show LispException where
   show = T.unpack . showException

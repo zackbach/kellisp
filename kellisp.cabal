@@ -72,6 +72,7 @@ test-suite kellisp-test
   main-is: Spec.hs
   other-modules:
       Kellisp.Environment.BooleanSpec
+      Kellisp.Environment.ListSpec
       Kellisp.Environment.NumericSpec
       Kellisp.Environment.OrderedSpec
       Kellisp.Environment.TypePredicatesSpec

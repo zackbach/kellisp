@@ -24,6 +24,15 @@ spec = do
       it "evaluates quoted items"
         $ "(quote 1 2)" `shouldEval` List [Integer 1, Integer 2]
 
+  describe "evaluation of if"
+    $ do
+      it "evaluates the second value when false"
+        $ "(if #f 1 2)" `shouldEval` Integer 2
+      it "doesn't evaluate the first value if false"
+        $ "(if #f (/ 1 0) 2)" `shouldEval` Integer 2
+      it "determines non-false values are truthy"
+        $ "(if 0 1 2)" `shouldEval` Integer 1
+
   -- note: more thorough testing of function application comes with env
   describe "evaluation of function application"
     $ do
