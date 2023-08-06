@@ -70,6 +70,15 @@ spec = do
           it "compares two case sensitive with >"
             $ "(string>? \"hi\" \"hI\")" `shouldEval` Bool True
 
+      describe "case insensitive"
+        $ do
+          -- again light on tests, bc we tested above
+          -- and these should just sorta work... lol
+          it "determines case insensitive equality"
+            $ "(string-ci=? \"a\" \"A\")" `shouldEval` Bool True
+          it "determines case insensitive comparison"
+            $ "(string-ci<? \"B\" \"a\")" `shouldEval` Bool False
+
   describe "boolean comparisons"
     $ do
       it "compares many booleans"

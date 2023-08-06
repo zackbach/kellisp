@@ -25,6 +25,7 @@ dependencies:
 - containers
 - megaparsec
 - mtl
+- case-insensitive
 
 ghc-options:
 - -Wall

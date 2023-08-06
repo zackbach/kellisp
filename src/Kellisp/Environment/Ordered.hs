@@ -4,6 +4,8 @@ module Kellisp.Environment.Ordered (orderedEnv) where
 
 import           Control.Monad (zipWithM)
 
+import qualified Data.CaseInsensitive as CI
+
 import           Kellisp.Environment.Boolean (boolBinop)
 import           Kellisp.Environment.PrimUtils
 
@@ -19,6 +21,11 @@ orderedEnv =
   , ("string<=?", mkP $ strOrdFold $ strOrdop (<=))
   , ("string>?", mkP $ strOrdFold $ strOrdop (>))
   , ("string>=?", mkP $ strOrdFold $ strOrdop (>=))
+  , ("string-ci=?", mkP $ strOrdFold $ strOrdopCI (==))
+  , ("string-ci<?", mkP $ strOrdFold $ strOrdopCI (<))
+  , ("string-ci<=?", mkP $ strOrdFold $ strOrdopCI (<=))
+  , ("string-ci>?", mkP $ strOrdFold $ strOrdopCI (>))
+  , ("string-ci>=?", mkP $ strOrdFold $ strOrdopCI (>=))
   , ("boolean=?", mkP $ boolOrdFold $ boolOrdop (==))]
 
 -- | Packages a comparison operator over numbers into LispVal form
@@ -74,3 +81,9 @@ boolOrdFold _ []       = throw $ NumArgs 1 []
 boolOrdFold _ [Bool _] = return $ Bool True
 boolOrdFold _ [v]      = throw $ TypeMismatch "Expected boolean" v
 boolOrdFold op vs      = andFold op vs
+
+-- | Packages a case-insensitive comparison operator into LispVal form
+strOrdopCI :: (forall a. Ord a => a -> a -> Bool) -> BinOp
+strOrdopCI op (String x) (String y) = return $ Bool $ op (CI.mk x) (CI.mk y)
+strOrdopCI _ (String _) v = throw $ TypeMismatch "Expected string" v
+strOrdopCI _ v _ = throw $ TypeMismatch "Expected string" v
