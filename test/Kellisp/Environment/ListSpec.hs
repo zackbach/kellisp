@@ -16,7 +16,7 @@ spec = do
         $ "(cons \"a\" '(1))" `shouldEval` List [String "a", Integer 1]
       it "adds lists on to lists"
         $ "(cons '(a) '(b c))"
-        `shouldEval` List [List [String "a"], String "b", String "c"]
+        `shouldEval` List [List [Atom "a"], Atom "b", Atom "c"]
 
   describe "car"
     $ do
