@@ -20,7 +20,7 @@ type Parser = Parsec Void T.Text
 --  where the special identifiers are specified in R5RS
 specialSymbol :: Parser Char
 -- note that what is considered a special identifier varies in different sources
-specialSymbol = oneOf ("!$%&*/:<=>?^_~" :: String) <?> "identifier symbol"
+specialSymbol = oneOf ("!$%&*/:<=>?^_~-+" :: String) <?> "identifier symbol"
 
 -- | Space consumer used for lexing
 --  allowing multi-line comments with Racket's syntax

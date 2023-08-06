@@ -75,6 +75,8 @@ data LispException =
   | LispError
   | DivByZero
   | EmptyList
+    -- actual index -> left index (inclusive) -> right index (inclusive)
+  | IndexOOB Integer Integer Integer
   deriving Eq
 
 showException :: LispException -> T.Text
@@ -96,6 +98,14 @@ showException BadSpecialForm = "Error: bad special form not recognized"
 showException LispError = "Error: the programmer of Kellisp made a mistake :("
 showException DivByZero = "Error: cannot divide by zero"
 showException EmptyList = "Error: expected a non-empty list, but got one"
+showException (IndexOOB x l r) = T.concat
+  [ "Error: index "
+  , T.pack $ show x
+  , " not in range ["
+  , T.pack $ show l
+  , ", "
+  , T.pack $ show r
+  , "] (inclusive)"]
 
 instance Show LispException where
   show = T.unpack . showException

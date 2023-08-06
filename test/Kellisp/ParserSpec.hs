@@ -36,6 +36,8 @@ spec = do
         $ parse parseLispVal "" "-" `shouldParse` Atom "-"
       it "parses identifiers with whitespace"
         $ parse parseLispVal "" "+    " `shouldParse` Atom "+"
+      it "parses atoms with dashes"
+        $ parse parseLispVal "" "string-append" `shouldParse` Atom "string-append"
 
   describe "parsing reserved"
     $ do
