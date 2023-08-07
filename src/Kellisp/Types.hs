@@ -5,6 +5,7 @@ module Kellisp.Types where
 import           Control.Exception
 import           Control.Monad.Reader
 
+import           Data.IORef
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import           Data.Void (Void)
@@ -24,7 +25,7 @@ data LispVal =
   | PrimFun IFunc
     -- represents a defined function that
     -- stores its environment for lexical scoping
-  | Lambda IFunc Env
+  | Lambda IFunc EnvRef
   deriving Eq
 
 -- | Pretty-prints a LispVal as Text
@@ -46,6 +47,9 @@ instance Show LispVal where
 -- | Represents an environment associating Text identifiers with bound LispVals
 type Env = Map.Map T.Text LispVal
 
+-- | Represents a reference to a mutable environment
+type EnvRef = IORef Env
+
 -- | Represents a standard function
 -- taking in a function from a list of parameters to the result
 newtype IFunc = IFunc { fn :: [LispVal] -> Eval LispVal }
@@ -58,11 +62,11 @@ instance Eq IFunc where
 -- | Represents an evaluation monad,
 -- where a ReaderT monad transformer wraps an underlying IO monad
 -- and the read-only environment is the Env above (allows lexical scoping)
-newtype Eval a = Eval { unEval :: ReaderT Env IO a }
+newtype Eval a = Eval { unEval :: ReaderT EnvRef IO a }
 -- by using record syntax, we get an accessor to easily unwrap
 -- we also use GeneralizedNewtypeDeriving to derive these easily
 -- by doing so, we don't have to lift as much
-  deriving (Monad, Functor, Applicative, MonadReader Env, MonadIO)
+  deriving (Monad, Functor, Applicative, MonadReader EnvRef, MonadIO)
 
 -- | Represents an exception thrown by a LispVal process
 data LispException =

@@ -5,6 +5,7 @@ module Kellisp.Eval (eval) where
 import           Control.Exception
 import           Control.Monad.Reader
 
+import           Data.IORef
 import qualified Data.Map as Map
 
 import           Kellisp.Types
@@ -23,8 +24,10 @@ eval (Bool b) = return $ Bool b
 eval (String s) = return $ String s
 eval Nil = return Nil
 eval (List []) = return Nil
+
 eval (Atom a) = do
-  env <- ask -- ask the ReaderT for the stored env
+  envref <- ask
+  env <- liftIO $ readIORef envref
   case Map.lookup a env of
     Just x  -> return x
     Nothing -> throw $ UnboundVar a
@@ -37,7 +40,19 @@ eval (List (Atom "if":vs)) = do
         (Bool False) -> eval ifFalse
         _  -> eval ifTrue
     _ -> throw BadSpecialForm
--- function application:
+-- TODO: prevent define from inside of expressions?
+-- for now we just return what the identifier was bound to
+eval (List [Atom "define", var, expr]) = do
+  case var of
+    (Atom x) -> do
+      expr' <- eval expr
+      envRef <- ask
+      -- here, we modify the stored reference to the environment
+      -- by adding in the newly defined identifier x
+      liftIO $ modifyIORef envRef (Map.insert x expr')
+      return expr'
+    v -> throw $ TypeMismatch "Expected symbol" v
+
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function
   args' <- mapM eval args -- evaluate all arguments

@@ -8,6 +8,7 @@ module Kellisp where
 import           Control.Exception
 import           Control.Monad.Reader
 
+import           Data.IORef
 import qualified Data.Text as T
 
 import           Kellisp.Environment
@@ -21,11 +22,13 @@ import           Text.Megaparsec (parse)
 
 -- | Read eval print loop
 repl :: IO ()
-repl = runInputT defaultSettings $ loop defaultEnv
+repl = do
+  defaultEnvRef <- newIORef defaultEnv
+  runInputT defaultSettings $ loop defaultEnvRef
 
 -- | one iteration of the REPL, evaluated in the given environment
 -- mutually recursive with handleInput
-loop :: Env -> InputT IO ()
+loop :: EnvRef -> InputT IO ()
 loop env = do
   s <- getInputLine "λ> "
   case s of
@@ -34,26 +37,20 @@ loop env = do
     Nothing    -> return ()
     Just input -> handleInput env $ T.pack input
 
--- TODO: these helpers could probably be cleaned up a bit
--- and their signatures could be enhanced / generalized
 -- | attempts to evaluate the input in the given environment, catching errors
 -- and passing in the updated environment to the next loop iteration
-handleInput :: Env -> T.Text -> InputT IO ()
+handleInput :: EnvRef -> T.Text -> InputT IO ()
 handleInput env input = do
   res <- liftIO $ try $ evalInput env input
-  case res of
-    Left (err :: SomeException) -> outputStrLn (show err) >> loop env
-    Right (env', val)           -> outputStrLn (show val) >> loop env'
+  -- we specify the type of the first show to prevent ambigious type variable
+  -- error arising from the try above
+  outputStrLn (either (show :: SomeException -> String) show res)
+  loop env
 
 -- | parses and evaluates text in the given input, returning
 -- both the resulting LispVal and the new environment
-evalInput :: Env -> T.Text -> IO (Env, LispVal)
-evalInput env input = runReaderT comp env
-  where
-    comp = do
-      result <- unEval $ readEval input
-      evalEnv <- ask
-      return (evalEnv, result)
+evalInput :: EnvRef -> T.Text -> IO LispVal
+evalInput env input = runReaderT (unEval $ readEval input) env
 
 -- | Reads and parses text into a LispVal that is evaluated
 -- note that the Eval monad is not actually run here, so we
