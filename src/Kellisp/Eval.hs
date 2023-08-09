@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Kellisp.Eval (eval) where
+module Kellisp.Eval (eval, evalBody) where
 
 import           Control.Exception
 import           Control.Monad.Reader
@@ -17,6 +17,7 @@ eval :: LispVal -> Eval LispVal
 -- quote postpones evaluation for arguments
 eval (List [Atom "quote", x]) = return x
 eval (List (Atom "quote":xs)) = return $ List xs
+
 -- some primitives are "autoquoted":
 eval (Integer i) = return $ Integer i
 eval (Double d) = return $ Double d
@@ -31,6 +32,9 @@ eval (Atom a) = do
   case Map.lookup a env of
     Just x  -> return x
     Nothing -> throw $ UnboundVar a
+
+eval (List (Atom "begin":vs)) = evalBody vs
+
 eval (List (Atom "if":vs)) = do
   case vs of
     [condition, ifTrue, ifFalse] -> do
@@ -38,8 +42,9 @@ eval (List (Atom "if":vs)) = do
       case c of
         -- all values are truthy except #f
         (Bool False) -> eval ifFalse
-        _  -> eval ifTrue
+        _ -> eval ifTrue
     _ -> throw BadSpecialForm
+
 -- TODO: prevent define from inside of expressions?
 -- for now we just return what the identifier was bound to
 eval (List [Atom "define", var, expr]) = do
@@ -51,7 +56,7 @@ eval (List [Atom "define", var, expr]) = do
       -- by adding in the newly defined identifier x
       liftIO $ modifyIORef envRef (Map.insert x expr')
       return expr'
-    v -> throw $ TypeMismatch "Expected symbol" v
+    v        -> throw $ TypeMismatch "Expected symbol" v
 
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function
@@ -63,3 +68,11 @@ eval (List (f:args)) = do
     (Lambda lf ctx) -> local (const ctx) $ fn lf args'
     _ -> throw $ NotFunction fun
 eval _ = throw BadSpecialForm
+
+-- | Evaluates a body expression by evaluating all LispValues
+-- sequentially, then returning the final result
+evalBody :: [LispVal] -> Eval LispVal
+-- not sure what to do with the empty case... maybe make better error
+evalBody []     = throw $ NumArgs 1 []
+evalBody [v]    = eval v
+evalBody (v:vs) = eval v >> evalBody vs

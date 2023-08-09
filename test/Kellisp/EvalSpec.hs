@@ -37,3 +37,21 @@ spec = do
   describe "evaluation of function application"
     $ do
       it "applies functions to arguments" $ "(+ 1 2)" `shouldEval` Integer 3
+
+  describe "evaluation of define"
+    $ do
+      it "assigns unbound variables"
+        $ "(define x 4) x" `shouldEvalValues` Integer 4
+      it "allows for updating variables"
+        $ "(define x 1) (define x 2) x" `shouldEvalValues` Integer 2
+      it "works with multiple variables"
+        $ "(define x 1)(define y 2)(+ x y)" `shouldEvalValues` Integer 3
+
+  describe "evaluation using begin"
+    $ do
+      it "evaluates sequential values" $ "(begin 1 2)" `shouldEval` Integer 2
+      it "evaluates the same as if it were in a file"
+        $ do
+          b <- readRun "(begin (define x 1) (define y 2) (+ x y))"
+          f <- readRunFile "(define x 1) (define y 2) (+ x y)"
+          b `shouldBe` f

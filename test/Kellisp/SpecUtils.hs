@@ -16,10 +16,24 @@ import           Test.Hspec
 readRun :: T.Text -> IO LispVal
 readRun input = do
   defaultEnvRef <- newIORef defaultEnv
-  evalInput defaultEnvRef input
+  evalInput defaultEnvRef $ readEval input
+
+-- | Reads input (that may consist of multiple values) and runs
+-- the eval monad in the default context
+readRunFile :: T.Text -> IO LispVal
+readRunFile input = do
+  defaultEnvRef <- newIORef defaultEnv
+  evalInput defaultEnvRef $ readEvalFile input
 
 -- | Runs a test given some text and the LispVal it should evaluate to
 shouldEval :: T.Text -> LispVal -> IO ()
 shouldEval input expected = do
   result <- readRun input
+  result `shouldBe` expected
+
+-- | Runs a test given some text representing multiple LispValues
+-- and the LispVal it should evaluate to
+shouldEvalValues :: T.Text -> LispVal -> IO ()
+shouldEvalValues input expected = do
+  result <- readRunFile input
   result `shouldBe` expected

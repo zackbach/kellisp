@@ -12,7 +12,7 @@ import           Data.IORef
 import qualified Data.Text as T
 
 import           Kellisp.Environment
-import           Kellisp.Eval (eval)
+import           Kellisp.Eval
 import           Kellisp.Parser
 import           Kellisp.Types
 
@@ -41,7 +41,7 @@ loop env = do
 -- and passing in the updated environment to the next loop iteration
 handleInput :: EnvRef -> T.Text -> InputT IO ()
 handleInput env input = do
-  res <- liftIO $ try $ evalInput env input
+  res <- liftIO $ try $ evalInput env $ readEval input
   -- we specify the type of the first show to prevent ambigious type variable
   -- error arising from the try above
   outputStrLn (either (show :: SomeException -> String) show res)
@@ -49,8 +49,8 @@ handleInput env input = do
 
 -- | parses and evaluates text in the given input, returning
 -- both the resulting LispVal and the new environment
-evalInput :: EnvRef -> T.Text -> IO LispVal
-evalInput env input = runReaderT (unEval $ readEval input) env
+evalInput :: EnvRef -> Eval LispVal -> IO LispVal
+evalInput env v = runReaderT (unEval v) env
 
 -- | Reads and parses text into a LispVal that is evaluated
 -- note that the Eval monad is not actually run here, so we
@@ -60,3 +60,8 @@ readEval txt = case parse parseLispVal "" txt of
   Left bundle -> throw $ ParseError bundle
   Right val   -> eval val
 
+-- | Reades and parses text from a file into a LispVal that is evaluated
+readEvalFile :: T.Text -> Eval LispVal
+readEvalFile txt = case parse parseLispValues "" txt of
+  Left bundle  -> throw $ ParseError bundle
+  Right values -> evalBody values

@@ -37,7 +37,8 @@ spec = do
       it "parses identifiers with whitespace"
         $ parse parseLispVal "" "+    " `shouldParse` Atom "+"
       it "parses atoms with dashes"
-        $ parse parseLispVal "" "string-append" `shouldParse` Atom "string-append"
+        $ parse parseLispVal "" "string-append"
+        `shouldParse` Atom "string-append"
 
   describe "parsing reserved"
     $ do
@@ -113,3 +114,18 @@ spec = do
         $ parse parseLispVal "" "\"hi\nmom\"" `shouldParse` String "hi\nmom"
       it "removes trailing whitespace (outside of quotes)"
         $ parse parseLispVal "" "\"bye  \"  " `shouldParse` String "bye  "
+
+  describe "parsing files with parseLispValues"
+    $ do
+      it "parses singlular expression as singleton list"
+        $ parse parseLispValues "" "1" `shouldParse` [Integer 1]
+      it "parses multiple expressions as lists"
+        $ parse parseLispValues "" "1 2" `shouldParse` [Integer 1, Integer 2]
+      it "while parsing with parseLispVal fails"
+        $ parse parseLispVal "" `shouldFailOn` "1 2"
+      it "parses lists"
+        $ parse parseLispValues "" "(1 2) (3 4)"
+        `shouldParse` [ List [Integer 1, Integer 2]
+                      , List [Integer 3, Integer 4]]
+      it "still throws for mismatched lists"
+        $ parse parseLispValues "" `shouldFailOn` "(1 2) (3 4"

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Kellisp.Parser (parseLispVal, parseExpr) where
+module Kellisp.Parser (parseLispVal, parseLispValues) where
 
 import qualified Data.Text as T
 import           Data.Void (Void)
@@ -115,3 +115,8 @@ parseExpr = label "valid expression"
 -- but this may have to be changed when file parsing is added
 parseLispVal :: Parser LispVal
 parseLispVal = between spaceConsumer eof parseExpr
+
+-- | Parses a series of sexpressions to the end of file
+-- this allows for multiple LispValues to be processed
+parseLispValues :: Parser [LispVal]
+parseLispValues = between spaceConsumer eof $ some parseExpr

@@ -5,4 +5,6 @@ Potential features (to be added much later)
 - [ ] More numbers (with Scheme number notation), exact vs inexact
 - [ ] Haskeline tab completion
 - [ ] Better parser error messages
-- [ ] Better error handling for IO functions
+- [ ] Better error handling for IO functions: `unliftIO`? `fromException`?
+- [ ] Testing primitives
+- [ ] Proper handling of tail calls (may require strict vs lazy)
