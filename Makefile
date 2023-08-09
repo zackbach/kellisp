@@ -17,6 +17,11 @@ repl:
 	stack build
 	stack exec kellisp-exe
 
+# builds and runs the REPL, loading the supplied file
+load:
+	stack build
+	stack exec kellisp-exe -- $(file)
+
 # generates documentation for build / dependencies
 # NOTE: maybe later, pass along arguments
 .PHONY: docs

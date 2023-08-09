@@ -55,3 +55,6 @@ spec = do
           b <- readRun "(begin (define x 1) (define y 2) (+ x y))"
           f <- readRunFile "(define x 1) (define y 2) (+ x y)"
           b `shouldBe` f
+      it "evaluates files as well"
+        -- i didn't really know where to put this test lol, probably move with standard library
+        $ "test/ksp/testing.ksp" `shouldEvalFile` Integer 3

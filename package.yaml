@@ -26,6 +26,7 @@ dependencies:
 - megaparsec
 - mtl
 - case-insensitive
+- bytestring
 
 ghc-options:
 - -Wall

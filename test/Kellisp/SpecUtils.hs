@@ -37,3 +37,11 @@ shouldEvalValues :: T.Text -> LispVal -> IO ()
 shouldEvalValues input expected = do
   result <- readRunFile input
   result `shouldBe` expected
+
+-- | Runs a test given a file path containing expressions
+-- and the result that the file should evaluate to
+shouldEvalFile :: FilePath -> LispVal -> IO ()
+shouldEvalFile fp expected = do
+  defaultEnvRef <- newIORef defaultEnv
+  result <- evalInputFile defaultEnvRef fp
+  result `shouldBe` expected

@@ -1,8 +1,14 @@
 module Main where
 
-import           Kellisp (repl)
+import           Kellisp (repl, fileRepl)
+
+import           System.Environment
 
 -- |Interpreter entry point: enters the REPL
--- TODO: parse command line arguments, either REPL or interpret a file
 main :: IO ()
-main = repl
+main = do
+  args <- getArgs
+  case args of
+    []   -> repl
+    [fp] -> fileRepl fp
+    _    -> fail "Error: input either zero or one arguments"

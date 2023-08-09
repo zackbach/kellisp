@@ -8,10 +8,12 @@ module Kellisp where
 import           Control.Exception
 import           Control.Monad.Reader
 
-import           Data.IORef
+import qualified Data.ByteString as B (readFile)
+import           Data.IORef (newIORef)
 import qualified Data.Text as T
+import           Data.Text.Encoding (decodeUtf8)
 
-import           Kellisp.Environment
+import           Kellisp.Environment (defaultEnv)
 import           Kellisp.Eval
 import           Kellisp.Parser
 import           Kellisp.Types
@@ -20,11 +22,18 @@ import           System.Console.Haskeline
 
 import           Text.Megaparsec (parse)
 
--- | Read eval print loop
+-- | Read eval print loop in the default environment
 repl :: IO ()
 repl = do
   defaultEnvRef <- newIORef defaultEnv
   runInputT defaultSettings $ loop defaultEnvRef
+
+-- | Reads the given file, if it exists, and loads definitions into a repl
+fileRepl :: FilePath -> IO ()
+fileRepl fp = do
+  envref <- newIORef defaultEnv
+  _ <- evalInputFile envref fp
+  runInputT defaultSettings $ loop envref
 
 -- | one iteration of the REPL, evaluated in the given environment
 -- mutually recursive with handleInput
@@ -51,6 +60,14 @@ handleInput env input = do
 -- both the resulting LispVal and the new environment
 evalInput :: EnvRef -> Eval LispVal -> IO LispVal
 evalInput env v = runReaderT (unEval v) env
+
+-- | Reads the given file, if it exists, and evaluates it in the given
+-- environment, updating that environment
+evalInputFile :: EnvRef -> FilePath -> IO LispVal
+evalInputFile envref fp = do
+  bs <- B.readFile fp
+  -- turns the file bytestring into text and evaluates, updating envref
+  evalInput envref $ readEvalFile $ decodeUtf8 bs
 
 -- | Reads and parses text into a LispVal that is evaluated
 -- note that the Eval monad is not actually run here, so we

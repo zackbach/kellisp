@@ -6,5 +6,6 @@ Potential features (to be added much later)
 - [ ] Haskeline tab completion
 - [ ] Better parser error messages
 - [ ] Better error handling for IO functions: `unliftIO`? `fromException`?
+- [ ] Better error handling for command line arguments
 - [ ] Testing primitives
 - [ ] Proper handling of tail calls (may require strict vs lazy)
