@@ -8,7 +8,6 @@ import           Control.Monad.Reader
 import           Data.Foldable (traverse_)
 import           Data.IORef
 import qualified Data.Map as Map
-import qualified Data.Text as T (Text)
 
 import           Kellisp.Types
 
@@ -86,7 +85,7 @@ eval (List (Atom "let":vs)) = case vs of
 eval (List (Atom "let*":vs)) = case vs of
   [List _] -> throw $ BadSpecialForm "Expected a body expression"
   ((List pairs):body) -> do
-    -- make a copy of the current environment
+    -- make a copy of the current environment (this could be made into helper)
     curEnvRef <- ask
     curEnv <- liftIO $ readIORef curEnvRef
     scopedEnv <- liftIO $ newIORef curEnv
@@ -94,7 +93,8 @@ eval (List (Atom "let*":vs)) = case vs of
     traverse_ (evalAndAdd scopedEnv) pairs
     -- finally, evaluate the body in the new environment
     local (const scopedEnv) $ evalBody body
-    where -- this is where let* is different from let
+    where
+          -- this is where let* is different from let
       -- | evaluates the LispVal in the given environment then
       -- adds it to that environment with the extracted identifier
       evalAndAdd :: EnvRef -> LispVal -> Eval ()

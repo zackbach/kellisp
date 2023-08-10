@@ -37,7 +37,7 @@ showVal (Double d)   = T.pack $ show d
 showVal (String s)   = T.concat ["\"", s, "\""]
 showVal (Bool True)  = "#t"
 showVal (Bool False) = "#f"
-showVal Nil          = "nil"
+showVal Nil          = "#nil"
 showVal (PrimFun _)  = "<primitive>"
 showVal (Lambda _ _) = "<lambda>"
 
