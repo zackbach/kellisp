@@ -58,3 +58,27 @@ spec = do
       it "evaluates files as well"
         -- i didn't really know where to put this test lol, probably move with standard library
         $ "test/ksp/testing.ksp" `shouldEvalFile` Integer 3
+
+  describe "evaluation using let"
+    $ do
+      it "binds variables locally" $ "(let ((x 1)) x)" `shouldEval` Integer 1
+      it "and doesn't bind them globally"
+        $ readRunFile "(let ((x 1)) x) x" `shouldThrow` (== UnboundVar "x")
+      it "binds multiple variables"
+        $ "(let ((x 2) (y 3)) (* x y))" `shouldEval` Integer 6
+      it "evaluates all values before binding"
+        {-
+        (let ((x 2) (y 3))
+          (let ((x 7)
+                -- here, x should still be 2
+                (z (+ x y)))
+            (* z x)))
+        -}
+        $ "(let ((x 2) (y 3)) (let ((x 7) (z (+ x y))) (* z x)))"
+        `shouldEval` Integer 35
+
+      describe "let variants"
+        $ do
+          it "let* evaluates sequentially"
+            $ "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))"
+            `shouldEval` Integer 70

@@ -21,10 +21,6 @@ or alternatively use the Makefile commands:
 
 > make build
 
-> make repl
-
-> make load file=filename
-
 > make test
 
 > make clean

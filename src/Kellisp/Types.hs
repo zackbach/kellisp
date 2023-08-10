@@ -75,7 +75,7 @@ data LispException =
   | NotFunction LispVal
   | UnboundVar T.Text
   | ParseError (ParseErrorBundle T.Text Void)
-  | BadSpecialForm
+  | BadSpecialForm T.Text
   | LispError
   | DivByZero
   | EmptyList
@@ -98,7 +98,8 @@ showException (UnboundVar var) =
   T.concat ["Error: ", var, " identifier is not bound"]
 showException (ParseError bundle) =
   T.concat ["Error: parsing failure\n", T.pack $ errorBundlePretty bundle]
-showException BadSpecialForm = "Error: bad special form not recognized"
+showException (BadSpecialForm msg) =
+  T.concat ["Error: bad special form not recognized\n", msg]
 showException LispError = "Error: the programmer of Kellisp made a mistake :("
 showException DivByZero = "Error: cannot divide by zero"
 showException EmptyList = "Error: expected a non-empty list, but got one"
