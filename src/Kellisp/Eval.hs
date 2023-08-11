@@ -7,6 +7,7 @@ import           Control.Monad.Reader
 
 import           Data.IORef
 import qualified Data.Map as Map
+import qualified Data.Text as T
 
 import           Kellisp.Types
 
@@ -44,8 +45,7 @@ eval (List (Atom "if":vs)) = case vs of
       _ -> eval ifTrue
   _ -> throw $ BadSpecialForm "Expected a condition and two expressions"
 
--- TODO: prevent define from inside of expressions?
--- for now we just return what the identifier was bound to
+{-
 eval (List [Atom "define", var, expr]) = do
   case var of
     (Atom x) -> do
@@ -56,6 +56,21 @@ eval (List [Atom "define", var, expr]) = do
       liftIO $ modifyIORef envRef (Map.insert x expr')
       return expr'
     v        -> throw $ TypeMismatch "Expected symbol" v
+-}
+-- define as a shorthand for lambda
+eval (List (Atom "define":rest)) = case rest of
+  -- in this case, we bind the expr to the atom x
+  [Atom x, expr] -> do
+    expr' <- eval expr
+    envRef <- ask
+    liftIO $ modifyIORef envRef (Map.insert x expr')
+    return expr'
+  -- in this case, we have the lambda shorthand
+  ((List ((Atom name):params)):body) -> eval
+    -- we just rewrite as a define with a lambda
+    (List [Atom "define", Atom name, List (Atom "lambda":List params:body)])
+  [v, _] -> throw $ TypeMismatch "Expected an identifier" v
+  _ -> throw $ BadSpecialForm "Expected variable(s) and expression or body"
 
 -- TODO: try to abstract similarities between the let cases
 eval (List (Atom "let":vs)) = case vs of
@@ -101,14 +116,51 @@ eval (List (Atom "let*":vs)) = case vs of
         -- unlike let, we evaluate in the new environment for let*
         val <- local (const envref) $ eval valExpr
         liftIO $ modifyIORef envref (Map.insert t val)
+      evalAndAdd _ (List [v, _]) =
+        throw $ TypeMismatch "Expected an identifier" v
       evalAndAdd _ _ = throw $ BadSpecialForm "Expected a list of pairs"
   _ -> throw $ BadSpecialForm "Expected a list of pairs and a body expression"
+
+eval (List (Atom "lambda":rest)) = case rest of
+  [List _] -> throw $ BadSpecialForm "Expected a body expression"
+  -- we can partially apply applyLambda to get an IFunc
+  (List params:body) -> do
+    idents <- mapM extractIdent params
+    asks $ Lambda $ IFunc $ applyLambda body idents
+  _ -> throw
+    $ BadSpecialForm "Expected a list of parameters and a body expression"
+  where
+    -- | extracts an identifer name from an atom,
+    -- throwing an error if the LispVal is not an Atom
+    extractIdent :: LispVal -> Eval T.Text
+    extractIdent (Atom a) = return a
+    extractIdent v        = throw $ TypeMismatch "Expected an identifer" v
+
+    -- | takes in a list of body expressions, a list of parameters,
+    -- and a list of expressions to bind to parameters, then returns
+    -- the body, evaluated with the arguments bound to parameters
+    applyLambda :: [LispVal] -> [T.Text] -> [LispVal] -> Eval LispVal
+    applyLambda body params args =
+      if length params == length args
+      then do
+        -- we make a copy of the current environment so we don't bind globally
+        curEnvRef <- ask
+        curEnv <- liftIO $ readIORef curEnvRef
+        scopedEnv <- liftIO $ newIORef curEnv
+        -- bind the arguments to parameter identifiers
+        zipWithM_
+          (\idt val -> liftIO $ modifyIORef scopedEnv $ Map.insert idt val)
+          params
+          args
+        -- then evaluate the body in the new scope
+        local (const scopedEnv) $ evalBody body
+      else throw $ NumArgs (toInteger $ length params) args
 
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function
   args' <- mapM eval args -- evaluate all arguments
   case fun of
-    -- pf :: IFunc :: [LispVal] -> Eval LispVal
+    -- pf :: IFunc :: [LispVal] -> Eval LispVal, extract with fn
     (PrimFun pf) -> fn pf args'
     -- for lambda, we evaluate in the stored context using local
     (Lambda lf ctx) -> local (const ctx) $ fn lf args'
