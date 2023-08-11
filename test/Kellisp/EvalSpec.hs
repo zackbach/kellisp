@@ -76,9 +76,13 @@ spec = do
         -}
         $ "(let ((x 2) (y 3)) (let ((x 7) (z (+ x y))) (* z x)))"
         `shouldEval` Integer 35
+      it "allows for define in the body"
+        $ "(let ((x 2)) (define y 3) (+ x y))" `shouldEval` Integer 5
 
       describe "let variants"
         $ do
           it "let* evaluates sequentially"
             $ "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))"
             `shouldEval` Integer 70
+          it "let* allows immediate reference"
+            $ "(let* ((x 2) (y (+ 1 x))) (+ x y))" `shouldEval` Integer 5

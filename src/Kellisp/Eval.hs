@@ -5,7 +5,6 @@ module Kellisp.Eval (eval, evalBody) where
 import           Control.Exception (throw)
 import           Control.Monad.Reader
 
-import           Data.Foldable (traverse_)
 import           Data.IORef
 import qualified Data.Map as Map
 
@@ -68,7 +67,7 @@ eval (List (Atom "let":vs)) = case vs of
     curEnv <- liftIO $ readIORef curEnvRef
     scopedEnv <- liftIO $ newIORef curEnv
     -- evaluate the initial values assigned to variables then assign in env
-    traverse_ (evalThenAdd scopedEnv) pairs
+    mapM_ (evalThenAdd scopedEnv) pairs
     -- evaluate the body in the new environment
     local (const scopedEnv) $ evalBody body
     where
@@ -90,7 +89,7 @@ eval (List (Atom "let*":vs)) = case vs of
     curEnv <- liftIO $ readIORef curEnvRef
     scopedEnv <- liftIO $ newIORef curEnv
     -- we use evalAndAdd, adding the values to the environment as we go for let*
-    traverse_ (evalAndAdd scopedEnv) pairs
+    mapM_ (evalAndAdd scopedEnv) pairs
     -- finally, evaluate the body in the new environment
     local (const scopedEnv) $ evalBody body
     where
