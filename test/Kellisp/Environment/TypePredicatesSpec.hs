@@ -66,8 +66,10 @@ spec = do
         $ "(procedure? +)" `shouldEval` Bool True
       it "evaluates operators before comparisons"
         $ "(procedure? (+ 1 2))" `shouldEval` Bool False
-      it "determines lambdas are procedures" pending
-      it "determines evaluated lambdas aren't procedures" pending
+      it "determines lambdas are procedures"
+        $ "(procedure? (lambda (x) x))" `shouldEval` Bool True
+      it "determines evaluated lambdas aren't procedures"
+        $ "(procedure? ((lambda (x) x) 1))" `shouldEval` Bool False
 
   describe "predicate general cases"
     $ do

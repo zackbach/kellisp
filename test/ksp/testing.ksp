@@ -1,4 +1,10 @@
+(define (map f alist)
+  (if (empty? alist)
+      alist
+      (cons (f (car alist)) (map f (cdr alist)))))
+
 (define x 1)
 (define y 2)
+
 ;; this should be returned
 (+ x y)

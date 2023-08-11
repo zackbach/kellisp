@@ -134,7 +134,7 @@ eval (List (Atom "lambda":rest)) = case rest of
     -- throwing an error if the LispVal is not an Atom
     extractIdent :: LispVal -> Eval T.Text
     extractIdent (Atom a) = return a
-    extractIdent v        = throw $ TypeMismatch "Expected an identifer" v
+    extractIdent v        = throw $ TypeMismatch "Expected an identifier" v
 
     -- | takes in a list of body expressions, a list of parameters,
     -- and a list of expressions to bind to parameters, then returns

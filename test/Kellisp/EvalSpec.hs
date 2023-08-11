@@ -46,6 +46,19 @@ spec = do
         $ "(define x 1) (define x 2) x" `shouldEvalValues` Integer 2
       it "works with multiple variables"
         $ "(define x 1)(define y 2)(+ x y)" `shouldEvalValues` Integer 3
+      it "throws the proper error when non-identifiers are present"
+        $ readRun "(define #f #t)"
+        `shouldThrow` (== TypeMismatch "Expected an identifier" (Bool False))
+
+      describe "define lambda shorthand"
+        $ do
+          it "defines functions properly"
+            $ "(define (foo x) (+ 1 x)) (foo 1)" `shouldEvalValues` Integer 2
+          it "defines zero-argument functions"
+            $ "(define (foo) 5) (foo)" `shouldEvalValues` Integer 5
+          it "allows for multiple expressions in body"
+            $ "(define (foo x) (define y 1) (+ x y)) (foo 2)"
+            `shouldEvalValues` Integer 3
 
   describe "evaluation using begin"
     $ do
@@ -56,7 +69,9 @@ spec = do
           f <- readRunFile "(define x 1) (define y 2) (+ x y)"
           b `shouldBe` f
       it "evaluates files as well"
-        -- i didn't really know where to put this test lol, probably move with standard library
+        -- i didn't really know where to put this test lol,
+        -- i'll probably move it with standard library tests
+        -- for now, it relies on the last line of the file being (+ x y)
         $ "test/ksp/testing.ksp" `shouldEvalFile` Integer 3
 
   describe "evaluation using let"
@@ -86,3 +101,24 @@ spec = do
             `shouldEval` Integer 70
           it "let* allows immediate reference"
             $ "(let* ((x 2) (y (+ 1 x))) (+ x y))" `shouldEval` Integer 5
+
+  describe "evaluation with lambda"
+    $ do
+      it "can be applied" $ "((lambda (x) (+ x 1)) 2)" `shouldEval` Integer 3
+      it "throws errors immediatly when misdefined"
+        $ readRun "(lambda (x #f) x)"
+        `shouldThrow` (== TypeMismatch "Expected an identifier" (Bool False))
+      it "errors at empty body"
+        $ readRun "(lambda (x y))"
+        `shouldThrow` (== BadSpecialForm "Expected a body expression")
+      it "allows multiple expressions in body"
+        $ "((lambda (x) (define y 1) (+ x y)) 2)" `shouldEval` Integer 3
+      {-
+      (let ((x 3))
+        (let ((f (lambda (y) (+ x y))))
+          (let ((x 5))
+            (f 4))))
+      -}
+      it "uses lexical scoping"
+        $ "(let ((x 3)) (let ((f (lambda (y) (+ x y)))) (let ((x 5)) (f 4))))"
+        `shouldEval` Integer 7
