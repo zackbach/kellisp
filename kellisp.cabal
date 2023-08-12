@@ -29,6 +29,7 @@ library
       Kellisp
       Kellisp.Environment
       Kellisp.Environment.Boolean
+      Kellisp.Environment.IO
       Kellisp.Environment.List
       Kellisp.Environment.Numeric
       Kellisp.Environment.Ordered
@@ -79,6 +80,7 @@ test-suite kellisp-test
   main-is: Spec.hs
   other-modules:
       Kellisp.Environment.BooleanSpec
+      Kellisp.Environment.IOSpec
       Kellisp.Environment.ListSpec
       Kellisp.Environment.NumericSpec
       Kellisp.Environment.OrderedSpec

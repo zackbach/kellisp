@@ -3,6 +3,7 @@ module Kellisp.Environment (defaultEnv) where
 import qualified Data.Map as Map
 
 import           Kellisp.Environment.Boolean
+import           Kellisp.Environment.IO
 import           Kellisp.Environment.List
 import           Kellisp.Environment.Numeric
 import           Kellisp.Environment.Ordered
@@ -21,3 +22,4 @@ defaultEnv = Map.fromList
   ++ listEnv
   ++ stringEnv
   ++ conversionEnv
+  ++ ioEnv

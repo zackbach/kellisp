@@ -156,6 +156,8 @@ eval (List (Atom "lambda":rest)) = case rest of
         local (const scopedEnv) $ evalBody body
       else throw $ NumArgs (toInteger $ length params) args
 
+eval (List (Atom "eval":body)) = evalBody body >>= eval
+
 eval (List (f:args)) = do
   fun <- eval f -- evaluate the function
   args' <- mapM eval args -- evaluate all arguments
