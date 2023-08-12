@@ -17,7 +17,8 @@ predicateEnv =
   , ("cons?", mkP $ mkUnop consPred)
   , ("string?", mkP $ mkUnop stringPred)
   , ("procedure?", mkP $ mkUnop procPred)
-  , ("nil?", mkP $ mkUnop nilPred)]
+  , ("nil?", mkP $ mkUnop nilPred)
+  , ("equal?", mkP $ mkBinop eq)]
 
 -- | determines whether a given LispVal is a number
 numberPred :: UnOp
@@ -82,3 +83,8 @@ nilPred :: UnOp
 nilPred Nil = return $ Bool True
 nilPred _   = return $ Bool False
 
+-- | determines whether two given LispValues are (extensionally) equal
+eq :: BinOp
+eq v1 v2 = if v1 == v2
+           then return $ Bool True
+           else return $ Bool False

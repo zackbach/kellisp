@@ -41,6 +41,8 @@ numericEnv =
   , ("round", mkP $ mkUnop $ doubleIntUnop round)
   , ("exp", mkP $ mkUnop $ doubleUnop exp)
   , ("sqrt", mkP $ mkUnop $ doubleUnop sqrt)
+  -- for now, sqr always returns a double, but this will be reworked
+  , ("sqr", mkP $ mkUnop $ doubleUnop (^^(2 :: Int)))
   , ("log", mkP $ mkUnop $ doubleUnop log)
   , ("sin", mkP $ mkUnop $ doubleUnop sin)
   , ("cos", mkP $ mkUnop $ doubleUnop cos)
